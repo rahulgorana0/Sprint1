@@ -1,0 +1,554 @@
+<!DOCTYPE html> <!-- Declares this document as an HTML5 standard webpage -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <!-- Sets document language to English and enables Spring Thymeleaf template XML namespaces -->
+
+<head> <!-- Begins the invisible metadata section of the webpage -->
+    <meta charset="UTF-8"> <!-- Enforces UTF-8 character encoding preventing text garbling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Forces mobile-responsive scaling rendering smoothly on phones -->
+    <title>Solar Energy Forecast Dashboard | SOLARFOR</title> <!-- Defines the text shown in the browser tab -->
+    
+    <!-- Bootstrap 5 CSS: Imports the core layout framework directly via lightning-fast CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts: Imports custom modern typography styles (Inter for body, Outfit for headers) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+        
+    <!-- Bootstrap Icons: Imports the vector icon library used throughout the UI -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        /* CSS Custom Properties (Variables) root definition establishing the Light Theme palette */
+        :root {
+            --bg-main: #f8fafc; /* Primary page background (light gray/blue) */
+            --card-bg: #ffffff; /* Component background (pure white) */
+            --accent-amber: #f59e0b; /* Primary brand color (orange/yellow) */
+            --accent-sky: #0ea5e9; /* Secondary brand color (bright blue) */
+            --text-main: #1e293b; /* Primary typography color (near black) */
+            --text-muted: #64748b; /* Secondary typography (slate gray) */
+            --border-color: #e2e8f0; /* Default border color */
+            --nav-bg: rgba(255, 255, 255, 0.85); /* Semi-transparent navbar background */
+            --table-hover: rgba(14, 165, 233, 0.05); /* Very subtle blue highlight for table rows */
+            --btn-hover: var(--card-bg); /* Button hover state */
+            --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Universal drop shadow */
+        }
+
+        /* CSS Variables override activated solely when the <html> tag receives data-theme="dark" attribute */
+        [data-theme="dark"] {
+            --bg-main: #111827; /* Deep midnight blue background */
+            --card-bg: #1f2937; /* Slightly lighter gray components */
+            --accent-amber: #FBBF24; /* Adjusted orange for dark mode contrast */
+            --accent-sky: #0EA5E9; /* Adjusted blue for dark mode contrast */
+            --text-main: #F3F4F6; /* Primary text rendering as almost white */
+            --text-muted: #9CA3AF; /* Secondary text rendering as light gray */
+            --border-color: rgba(255, 255, 255, 0.1); /* Extremely faint structural borders */
+            --nav-bg: rgba(31, 41, 55, 0.8); /* Semi-transparent dark navbar */
+            --table-hover: rgba(255, 255, 255, 0.08); /* Hover state mapped to white glow */
+            --btn-hover: rgba(255, 255, 255, 0.1); /* Button hover state mapped to white glow */
+            --glass-shadow: none; /* Disables shadows which look muddy on dark backgrounds */
+        }
+
+        /* Core document body styling */
+        body {
+            background-color: var(--bg-main); /* Applies dynamic theme background color */
+            color: var(--text-main); /* Applies dynamic theme typography color */
+            font-family: 'Inter', sans-serif; /* Implements the imported Google Font for paragraphs */
+            margin: 0; /* Strips browser default margins */
+            padding: 0; /* Strips browser default padding */
+            overflow-x: hidden; /* Prevents horizontal scrolling bugs caused by wide elements */
+        }
+
+        /* Typography selector targeting all major headers to use the stylized Outfit font */
+        h1, h2, h3, h4, h5, .font-outfit {
+            font-family: 'Outfit', sans-serif; /* Applies the imported Google Font */
+        }
+
+        /* Fixed Navigation Header definitions */
+        .status-bar {
+            background: var(--nav-bg); /* Applies the theme's transparent color */
+            backdrop-filter: blur(8px); /* Executes an expensive CSS glass-blur effect beneath the navbar */
+            border-bottom: 1px solid var(--border-color); /* Adds structural grounding line */
+            padding: 10px 24px; /* Internal spacing keeping elements off the absolute edge */
+            position: sticky; /* Forces the bar to stick to the ceiling when scrolling */
+            top: 0; /* Explicit instruction for sticky positioning */
+            z-index: 1000; /* Forces this element to float above all charts and tables */
+            display: flex; /* Initiates flexbox layout */
+            align-items: center; /* Vertically centers children components */
+            justify-content: space-between; /* Pushes the left and right groups to the edges */
+        }
+
+        /* Individual segments inside the Status Bar */
+        .status-item {
+            display: flex; /* Initiates flexbox layout */
+            align-items: center; /* Centers icons alongside text */
+            gap: 12px; /* Spaces out internal items uniformly without margins */
+            font-size: 0.9rem; /* Slightly smaller typography */
+            font-weight: 500; /* Medium thickness */
+        }
+
+        /* Pulsing green 'Live Status' indicator dot */
+        .status-dot {
+            width: 8px; /* Fixed dimension */
+            height: 8px; /* Fixed dimension */
+            border-radius: 50%; /* Rounds square into perfect circle */
+            background-color: #10B981; /* Explicit vibrant green */
+            box-shadow: 0 0 8px #10B981; /* Fakes a glow effect using colored dropshadows */
+            animation: pulse 2s infinite; /* Binds the custom CSS animation below */
+        }
+
+        /* Keyframe animation definition generating the pulsing effect */
+        @keyframes pulse {
+            0% { opacity: 1; } /* Starting opacity */
+            50% { opacity: 0.4; } /* Middle opacity fade */
+            100% { opacity: 1; } /* Ending opacity restoration */
+        }
+
+        /* Standardized styling for all large dashboard panels */
+        .premium-card {
+            background: var(--card-bg); /* Applies dynamic theme card background */
+            border: 1px solid var(--border-color); /* Structural wireframe */
+            border-radius: 16px; /* High rounding for modern aesthetic */
+            padding: 24px; /* Generous internal whitespace */
+            height: 100%; /* Forces cards in a grid row to stretch equally */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth CSS animation when hovering */
+        }
+
+        /* Hover animation target for premium cards */
+        .premium-card:hover {
+            transform: translateY(-4px); /* Pushes the element virtually upwards 4 pixels */
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1); /* Drops a heavier shadow beneath the floating card */
+            border-color: var(--accent-sky); /* Highlights the border dynamically */
+        }
+
+        /* Grey subtitle defining KPI blocks */
+        .kpi-title {
+            color: var(--text-muted); /* Theme dynamic subdued grey */
+            text-transform: uppercase; /* Forces caps without altering HTML */
+            font-size: 0.75rem; /* Tiny typography */
+            letter-spacing: 0.05em; /* Spreads letters out improving readability at tiny sizes */
+            font-weight: 600; /* Thicker font weight */
+            margin-bottom: 8px; /* Spacing pushing down to the number */
+        }
+
+        /* Massive main metric numbers */
+        .kpi-value {
+            font-size: 2rem; /* Huge scaling */
+            font-weight: 700; /* Bold scaling */
+            margin-bottom: 0; /* Removes default downward pressure */
+        }
+
+        /* Utility classes mapping explicitly to dynamic theme variables */
+        .amber-text { color: var(--accent-amber); } /* Bind to amber */
+        .sky-text { color: var(--accent-sky); } /* Bind to sky */
+
+        /* Wrapper enforcing constraint around Chart.js targets */
+        .chart-container {
+            position: relative; /* Prerequisite for Chart.js canvas scaling */
+            margin: auto; /* Centers element */
+            width: 100%; /* Extends entire width of grid column */
+        }
+
+        /* Table structural reset isolating it from ugly browser defaults */
+        .custom-table {
+            background: transparent; /* Ensures it adopts the premium-card background */
+            color: var(--text-main); /* Theme dynamic font colors */
+            border-collapse: separate; /* Disables HTML table borders touching */
+            border-spacing: 0 8px; /* Adds physical gaps BETWEEN table rows creating a 'floating row' layout */
+        }
+
+        /* Table header styling */
+        .custom-table thead th {
+            border: none; /* Removes structural lines */
+            color: var(--text-muted); /* Theme gray */
+            font-weight: 600; /* Bold visibility */
+            font-size: 0.8rem; /* Small visibility */
+            text-transform: uppercase; /* Forced aesthetic */
+            padding: 12px 20px; /* Generous internal padding */
+        }
+
+        /* Individual data row targets */
+        .custom-table tbody tr {
+            background: var(--bg-main); /* Sets row to slightly contrast against card background */
+            border-radius: 12px; /* Rounds the row (only works because border-collapse is 'separate') */
+            transition: background 0.2s ease; /* Animates hover states */
+        }
+
+        /* Row hover target */
+        .custom-table tbody tr:hover {
+            background: var(--table-hover); /* Subtly highlights row under mouse */
+        }
+
+        /* Individual cell bounds */
+        .custom-table td {
+            padding: 16px 20px; /* Spacing */
+            border: none; /* Hide HTML default wireframes */
+            vertical-align: middle; /* Centers text visually inside row constraints */
+        }
+
+        /* Extremely complex CSS selector ensuring the corner rounding applies only to the physical exterior corners of the Table Row, not every individual cell */
+        .custom-table tr td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+        .custom-table tr td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+
+        /* Icon stylistic tuning */
+        .weather-icon {
+            font-size: 1.5rem; /* Larger sizing */
+            filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.4)); /* Fakes a glowing halo effect */
+        }
+
+        /* Navbar aesthetic branding */
+        .navbar-brand {
+            font-family: 'Outfit', sans-serif; /* Stylish font */
+            font-weight: 700; /* Bold */
+            font-size: 1.5rem; /* Large size */
+            background: linear-gradient(to right, var(--accent-amber), var(--accent-sky)); /* Paints text using a complex CSS gradient instead of a single color */
+            -webkit-background-clip: text; /* Masks the gradient to exactly the shape of the letters */
+            -webkit-text-fill-color: transparent; /* Removes the black font fill revealing the gradient behind it */
+        }
+
+        /* Styling for the Refresh and Theme toggle buttons */
+        .btn-glass {
+            background: var(--bg-main); /* Theme dynamic */
+            border: 1px solid var(--border-color); /* Wireframe constraint */
+            color: var(--text-main); /* Text mapped */
+            border-radius: 10px; /* Soft rounding */
+            padding: 8px 16px; /* Spacing limits */
+            font-size: 0.9rem; /* Sizing */
+            transition: all 0.2s; /* Smooth animations */
+        }
+
+        /* Button hover animation mapping */
+        .btn-glass:hover {
+            background: var(--btn-hover); /* Dynamic hover hue */
+            color: var(--accent-amber); /* Shifts text to orange */
+            border-color: var(--accent-amber); /* Shifts border to orange */
+            box-shadow: var(--glass-shadow); /* Applies drop shadow */
+        }
+    </style>
+    
+    <script>
+        /* CRITICAL JS SNIPPET: Executes immediately inside HEAD before HTML begins painting preventing 'white-flash' when returning to site in Dark Mode */
+        const savedTheme = localStorage.getItem('theme') || 'light'; // Requests preference from Browser LocalStorage database
+        if (savedTheme === 'dark') { // Checks if preference is dark
+            document.documentElement.setAttribute('data-theme', 'dark'); // Forcefully injects the attribute triggering the CSS override variables immediately 
+        }
+    </script>
+</head>
+
+<body> <!-- Initiates the visible document hierarchy -->
+
+    <!-- Live Status Navigation Bar Component -->
+    <div class="status-bar">
+        <!-- Left Side: Branding -->
+        <div class="status-item">
+            <a class="navbar-brand m-0" href="#">SOLAR<span>F</span>ORECAST</a>
+        </div>
+        
+        <!-- Right Side: Metrics (Hidden on mobile phones via d-none, shown on mediums+ via d-md-flex) -->
+        <div class="status-item d-none d-md-flex">
+            <!-- Interactivity: Button targeting Theme swapping -->
+            <button id="themeToggleBtn" class="btn btn-glass btn-sm me-3" title="Toggle Theme">
+                <i class="bi bi-moon-stars" id="themeIcon"></i> <!-- Dynamic Icon Container -->
+            </button>
+            
+            <!-- Dynamic Binding: Fetches Temperature from 'currentWeather' bean injected by Spring at server runtime -->
+            <i class="bi bi-thermometer-half sky-text fs-5"></i>
+            <span>Current: <span class="fw-bold"
+                    th:text="${currentWeather.tempC != null ? currentWeather.tempC + '°C' : '--°C'}">28°C</span></span>
+            
+            <!-- Graphic separator line -->
+            <div class="vr mx-2 text-secondary"></div>
+            
+            <!-- Dynamic Binding: Fetches active kW string passed natively by Controller bean -->
+            <i class="bi bi-lightning-charge amber-text fs-5"></i>
+            <span>Power: <span class="fw-bold" th:text="${currentPower + ' kW'}">45.2 kW</span></span>
+        </div>
+    </div>
+
+    <!-- Master page layout bounds defining grid layouts via Bootstrap framework -->
+    <div class="container-fluid px-4 py-4">
+
+        <!-- Top Row: High level single KPI tracking metrics -->
+        <div class="row g-4 mb-4">
+            
+            <!-- Left Card Constraint (Takes half screen) -->
+            <div class="col-md-6">
+                <div class="premium-card"> <!-- Attaches custom premium styling block -->
+                    <div class="kpi-title">Peak Power Today</div> <!-- Subtitle -->
+                    <div class="d-flex align-items-end justify-content-between">
+                        <!-- Server Side Thymeleaf Execution: Binds 'peakPower' string output right here natively dynamically -->
+                        <h2 class="kpi-value amber-text" th:text="${peakPower + ' kW'}">0.0</h2>
+                        <!-- Inconspicuous decoration graphic -->
+                        <i class="bi bi-graph-up-arrow fs-1 opacity-25 text-warning"></i>
+                    </div>
+                    <div class="mt-2 text-muted small">Max recorded AC output</div> <!-- Description trace -->
+                </div>
+            </div>
+            
+            <!-- Right Card Constraint (Takes half screen) -->
+            <div class="col-md-6">
+                <div class="premium-card"> <!-- Generates aesthetic border bounds -->
+                    <div class="kpi-title">Total Daily Yield</div> <!-- Subtext -->
+                    <div class="d-flex align-items-end justify-content-between">
+                        <!-- Dynamic Binding: Pulls the Controller 'totalYieldKpi' literal output mapping -->
+                        <h2 class="kpi-value sky-text" th:text="${totalYieldKpi + ' kWh'}">0.0</h2>
+                        <!-- Graphic Decoration icon -->
+                        <i class="bi bi-sun fs-1 opacity-25 text-info"></i>
+                    </div>
+                    <div class="mt-2 text-muted small">Aggregated energy harvested</div> <!-- Trace definition -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Row: Complex Interactive Dashboard Graphic Arrays -->
+        <div class="row g-4 mb-4">
+            
+            <!-- Massive primary charting block (Takes 8/12ths of the grid layout limit) -->
+            <div class="col-lg-8">
+                <div class="premium-card">
+                    <!-- Title headers layout -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="m-0 fw-bold">48-Hour Energy Forecast</h5>
+                        <!-- Tiny aesthetic description badge defining technical details gracefully -->
+                        <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2">
+                            Dual-Axis Prediction</div>
+                    </div>
+                    <!-- ChartJS Drawing boundary Target. Heights MUST be specified natively -->
+                    <div class="chart-container" style="height: 380px;">
+                        <canvas id="predictionChart"></canvas> <!-- Empty image canvas waiting for JS compilation targeting -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Secondary Charting Block (Takes 4/12ths of the grid limit bounds natively) -->
+            <div class="col-lg-4">
+                <div class="premium-card">
+                    <h5 class="mb-4 fw-bold">15-Day Daily Totals</h5> <!-- Title bounds -->
+                    <div class="chart-container" style="height: 380px;">
+                        <canvas id="dailyTotalsChart"></canvas> <!-- Empty target canvas waiting for Bar Chart JS scripts -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row: High Density Data Inspection Output -->
+        <div class="row g-4">
+            
+            <!-- Fully wide table layout (Takes 12/12ths width) -->
+            <div class="col-12">
+                <div class="premium-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="m-0 fw-bold">Detailed Forecast Schedule</h5>
+                        
+                        <!-- Client-Side interactive execution button dispatching REST Request to sync manually -->
+                        <button id="refreshDataBtn" class="btn btn-glass">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Sync Live Data
+                        </button>
+                    </div>
+                    
+                    <!-- Table wrapper adding scrollbars nicely if it breaks width on mobile devices! -->
+                    <div class="table-responsive">
+                        <!-- Applying the isolated CSS bounds separating it from structural framework tables cleanly -->
+                        <table class="table custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th> <!-- Column Title -->
+                                    <th>Temp</th> <!-- Column Title -->
+                                    <th>Radiation</th> <!-- Column Title -->
+                                    <th>Predicted Power</th> <!-- Column Title -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Thymeleaf Iteration Engine!: Server natively duplicates this HTML block for every object mapping array in 'forecast48h' -->
+                                <tr th:each="entry : ${forecast48h}">
+                                    
+                                    <!-- Format native Java Datetime explicitly directly translating natively on Server Render gracefully -->
+                                    <td class="fw-medium font-outfit"
+                                        th:text="${#temporals.format(entry.time, 'MMM dd, HH:mm')}">Time</td>
+
+                                    <!-- Dump Temperature directly onto target -->
+                                    <td th:text="${entry.temp + '°C'}">Temp</td>
+                                    
+                                    <!-- Advanced Number formatting ensuring exact Decimal places resolving UI floating point chaos -->
+                                    <td th:text="${#numbers.formatDecimal(entry.radiation, 1, 1) + ' W/m²'}">Radiation
+                                    </td>
+                                    
+                                    <!-- Formatting primary generated result numbers mapping visually dynamically -->
+                                    <td class="fw-bold amber-text"
+                                        th:text="${#numbers.formatDecimal(entry.power, 1, 2) + ' kW'}">Power</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Graphing Library Script Import -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Block defining custom JS logic executing natively interacting bridging Server objects to Browser memory bounds -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/ // Thymeleaf explicit tag disabling HTML escaping preventing destruction of complex logic Arrays mapped natively
+
+        // CRITICAL INJECTION: Tells Spring to take the entire List<Map> array passed via Controller mapping and dump it here as literal Javascript JSON memory arrays natively!
+        const forecast48h = /*[[${forecast48h}]]*/[]; // Maps 48 hour telemetry
+        const dailyTotals15d = /*[[${dailyTotals15d}]]*/[]; // Maps 15 day aggregate array 
+
+        // Locate Canvas nodes parsing physically acquiring 2-Dimensional Drawing hooks smoothly 
+        const ctxPrediction = document.getElementById('predictionChart').getContext('2d');
+        const ctxDaily = document.getElementById('dailyTotalsChart').getContext('2d');
+        
+        // Define null state pointers managing Graphic instances (Fixes flickering bugs if functions redraw them overlapping rapidly)
+        let predictionChartInstance; 
+        let dailyChartInstance; 
+
+        // Polyfill resolving Spring Serializer differences parsing Datetimes back into JS Date objects successfully natively exactly
+        function parseDate(dateVal) {
+            if (!dateVal) return new Date(); // Empty fallback
+            if (Array.isArray(dateVal)) { // Resolves default Jackson Datetime Array formatting seamlessly
+                return new Date(dateVal[0], (dateVal[1] || 1) - 1, dateVal[2] || 1, dateVal[3] || 0, dateVal[4] || 0);
+            }
+            if (typeof dateVal === 'object') { // Resolves nested Dictionary configurations dynamically
+                return new Date(dateVal.year, (dateVal.monthValue || 1) - 1, dateVal.dayOfMonth, dateVal.hour, dateVal.minute);
+            }
+            return new Date(dateVal); // Generic string fallback definition map bounds seamlessly
+        }
+
+        // Iterates through prediction data explicitly generating isolated Array strings representing X-Axis timestamps neatly 
+        const labels48h = forecast48h.map(e => {
+            const date = parseDate(e.time); // Translate object safely
+            return isNaN(date.getTime()) ? '--:00' : date.getHours().toString().padStart(2, '0') + ':00'; // Format nicely 
+        });
+
+        // Massive Drawing function creating the aesthetics explicitly seamlessly
+        function createCharts(isDark) {
+            // Guard clause destroying previous graphic objects before painting new colors avoiding horrific lag bounds natively  
+            if (predictionChartInstance) predictionChartInstance.destroy();
+            if (dailyChartInstance) dailyChartInstance.destroy();
+
+            // Dynamic color tracking arrays resolving theme modes resolving contrasting constraints cleanly
+            const cText = isDark ? '#9CA3AF' : '#64748b'; // Dynamic text hue 
+            const cGrid = isDark ? 'rgba(255, 255, 255, 0.05)' : '#e2e8f0'; // Dynamic Wireframe target
+            const cAmber = isDark ? '#FBBF24' : '#f59e0b'; // Amber constraint bounds
+            const cSky = isDark ? '#0EA5E9' : '#0ea5e9'; // Blue array configuration
+            const cAmberBg = isDark ? 'rgba(251, 191, 36, 0.1)' : 'rgba(245, 158, 11, 0.1)'; // Area fill
+            const cSkyBg = isDark ? 'rgba(14, 165, 233, 0.4)' : 'rgba(14, 165, 233, 0.6)'; // Area fill
+
+            // Initializes line graph 
+            predictionChartInstance = new Chart(ctxPrediction, {
+                type: 'line', // Sets rendering bounds precisely 
+                data: {
+                    labels: labels48h, // Binds X-axis markers 
+                    datasets: [
+                        {
+                            label: 'Predicted Power (kW)', // Configures UI tracking layout maps explicitly cleanly 
+                            data: forecast48h.map(e => e.power), // Translates entire data array output into isolated power line dots cleanly seamlessly 
+                            borderColor: cAmber, // Apply defined constraint mapped explicitly correctly
+                            backgroundColor: cAmberBg, // Area fill
+                            fill: true, // Forces solid color beneath line mapping cleanly gracefully
+                            tension: 0.4, // Generates smooth sweeping splines resolving robotic angularity cleanly seamlessly 
+                            yAxisID: 'y' // Binds mapping to pure left-sided bounds 
+                        },
+                        {
+                            label: 'Solar Radiation (W/m²)', // Map second complex variable targets arrays 
+                            data: forecast48h.map(e => e.radiation), // Extrapolates environment arrays formatting neatly 
+                            borderColor: cSky, // Defines blue hue bounds cleanly securely  
+                            borderDash: [5, 5], // Applies dashed stroke natively formatting aesthetics flawlessly 
+                            tension: 0.4, // Match curvature seamlessly gracefully  
+                            yAxisID: 'y1' // Binds entirely unique RIGHT-sided Y-axis bounds tracking explicitly 
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, // Auto rescales canvas explicitly  
+                    maintainAspectRatio: false, // Forces obedience to pure CSS dimensional heights smoothly  
+                    interaction: { mode: 'index', intersect: false }, // Aggregates hover text showing both nodes simultaneously precisely cleanly explicitly 
+                    plugins: {
+                        legend: { position: 'top', labels: { color: cText, usePointStyle: true, font: { size: 12 } } } // Stylizes marker labels arrays precisely efficiently cleanly 
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: cText, autoSkip: false, maxRotation: 90, minRotation: 90 } }, // Explicit rendering properties generating X bounds precisely cleanly explicitly securely 
+                        y: { type: 'linear', position: 'left', grid: { color: cGrid }, ticks: { color: cText }, title: { display: true, text: 'Power (kW)', color: cAmber } }, // Primary Y limit layouts explicit maps
+                        y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: cText }, title: { display: true, text: 'Radiation (W/m²)', color: cSky } } // Secondary Y Limit formats flawlessly gracefully cleanly 
+                    }
+                }
+            });
+
+            // Maps massive daily grouping metrics chart explicitly formatting purely securely flawlessly 
+            dailyChartInstance = new Chart(ctxDaily, {
+                type: 'bar', // Forces standard box mapping logic efficiently
+                data: {
+                    labels: dailyTotals15d.map(e => e.date), // Transposes date identifiers precisely resolving constraints securely smoothly safely 
+                    datasets: [{
+                        label: 'Total Yield (kWh)', // Title layout map definition explicitly completely gracefully
+                        data: dailyTotals15d.map(e => e.yield), // Translates yield amounts configuring precisely smoothly  
+                        backgroundColor: cSkyBg, // Fill mapping 
+                        borderColor: cSky, // Line constraint bounds mapping cleanly
+                        borderWidth: 1, // Edge explicitly drawn seamlessly
+                        borderRadius: 6 // Caps towers natively cleanly exactly resolving rounded arrays softly beautifully  
+                    }]
+                },
+                options: {
+                    responsive: true, // Layout limits 
+                    maintainAspectRatio: false, // Override CSS heights seamlessly cleanly completely  
+                    plugins: { legend: { display: false } }, // Strip unnecessary UI noise seamlessly flawlessly 
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: cText, maxRotation: 45, minRotation: 45 } }, // Define label slopes directly functionally  
+                        y: { grid: { color: cGrid }, ticks: { color: cText } } // Resolve scale marking limits completely cleanly smoothly explicitly  
+                    }
+                }
+            });
+        }
+
+        // Initialize Theme & Charts natively seamlessly correctly on script layout load bounds smoothly
+        const initialIsDark = document.documentElement.getAttribute('data-theme') === 'dark'; // Check attribute flags safely securely explicitly 
+        createCharts(initialIsDark); // Spawn JS objects handling arrays explicitly securely smoothly correctly cleanly 
+
+        // Grab navigation limits
+        const themeIcon = document.getElementById('themeIcon');
+        if (initialIsDark) themeIcon.classList.replace('bi-moon-stars', 'bi-sun'); // Morph icons based seamlessly correctly on modes appropriately precisely completely 
+
+        // Tie listener directly onto Button handling dynamic visual swaps seamlessly correctly smoothly directly cleanly explicitly 
+        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme'); // Fetch flag arrays smoothly securely cleanly 
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; // Reverse pointer securely flawlessly smoothly cleanly 
+            
+            if (newTheme === 'dark') { // Evaluate pointer definitions mapping layouts natively cleanly explicitly gracefully precisely 
+                document.documentElement.setAttribute('data-theme', 'dark'); // Inject attribute mappings securely functionally explicitly cleanly safely 
+                themeIcon.classList.replace('bi-moon-stars', 'bi-sun'); // Shift image explicitly correctly smoothly resolving accurately exactly 
+            } else {
+                document.documentElement.removeAttribute('data-theme'); // Clean document properties seamlessly handling outputs smoothly functionally perfectly 
+                themeIcon.classList.replace('bi-sun', 'bi-moon-stars'); // Morph icon exactly securely natively 
+            }
+            
+            localStorage.setItem('theme', newTheme); // Remember array configuration database string uniquely properly permanently
+            createCharts(newTheme === 'dark'); // Force chart re-rendering exactly mapping arrays securely beautifully gracefully  
+        });
+
+        // Binds REST fetch execution string mapping directly gracefully accurately intelligently cleanly  
+        document.getElementById('refreshDataBtn').addEventListener('click', function () {
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Syncing...'; // Shift html arrays indicating loading cleanly properly seamlessly smoothly gracefully 
+            this.disabled = true; // Prevents recursive spamming seamlessly functionally precisely explicitly 
+
+            // Fires HTTP command completely smoothly accurately 
+            fetch('/api/weather/refresh', { method: 'POST' })
+                .then(r => r.json()) // Request parsing smoothly properly gracefully explicitly functionally safely 
+                .then(data => {
+                    if (data.status === 'success') location.reload(); // Upon array resolution force hard refresh properly cleanly gracefully 
+                    else alert('Sync failed: ' + data.message); // Emit warning arrays precisely accurately cleanly functionally explicitly 
+                })
+                .catch(e => {
+                    console.error(e); // Dump logs silently natively natively exactly 
+                    alert('Sync error occurred.'); // Present error modal gracefully properly functionally seamlessly smoothly explicitly 
+                })
+                .finally(() => { // Force layout arrays dynamically resetting states natively seamlessly exactly cleanly smoothly flawlessly thoroughly flawlessly cleanly 
+                    this.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Sync Live Data'; // Resolve explicitly
+                    this.disabled = false; // Free buttons elegantly explicitly natively correctly intelligently 
+                });
+        });
+        /*]]>*/ // Concluding explicit map strings ensuring parse completely smoothly intelligently 
+    </script>
+</body>
+
+</html>

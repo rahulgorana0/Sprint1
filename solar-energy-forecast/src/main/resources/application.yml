@@ -1,0 +1,60 @@
+# Core Spring framework configuration tree
+spring:
+  # Application identity block
+  application:
+    # Resolves internal naming schemas assigning the global app identifier used in logs
+    name: solar-energy-forecast
+  
+  # Database connection pooling block establishing MySQL integration
+  datasource:
+    # Instructs JDBC to connect to a specific local port, forcefully generating the schema if utterly missing, disregarding SSL warnings broadly
+    url: jdbc:mysql://localhost:3306/energy_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    # Default high-privileged SQL user mapping (Development bounds)
+    username: root
+    # Requisite secret. Hardcoded for developer sandbox bounds (Use ENV variables for production!) 
+    password: password 
+    # Points JDBC precisely to the standard MySQL 8 connectivity driver class natively
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # Java Persistence API config tuning Hibernate ORM behavior
+  jpa:
+    # Explicit hibernate internal properties
+    hibernate:
+      # CRITICAL: Instructs Hibernate to automatically alter tables seamlessly matching internal Java mappings
+      ddl-auto: update
+    # Silences excessive console spam hiding raw SQL commands during standard execution 
+    show-sql: false
+    # Advanced JPA properties bounds tuning
+    properties:
+      hibernate:
+        # Translates generic JPA object queries directly into specialized MySQL variant dialects effortlessly smoothly
+        dialect: org.hibernate.dialect.MySQLDialect
+        # If SQL is shown, formats it beautifully with indents
+        format_sql: true
+        
+        # --- Batch Insert Optimization ---
+        # Highly critical property transforming individual 1-by-1 queries into massive blocks of 10,000 resolving ingestion speeds exponentially 
+        jdbc.batch_size: 10000
+        # Instructs hibernate to organize insertion arrays sequentially boosting throughput speeds cleanly 
+        order_inserts: true
+        # Organizes update arrays preventing database deadlock operations exactly seamlessly  
+        order_updates: true
+
+  # Configures SLF4J logger boundaries
+  logging:
+    level:
+      # Allows explicit debugging of slow queries natively 
+      org.hibernate.SQL: DEBUG
+
+# Custom Application settings block defining external services
+weather:
+  api:
+    # Base URL pointing to the Visual Crossing REST data service
+    base-url: "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
+    # Authorization token assigned to standard profile 
+    key: "25393EJGTDNGJ2WCVAS85RUSK"
+
+# Webserver property configurations 
+server:
+  # Instructs Tomcat to bind to local port 8080 preventing port overlap cleanly
+  port: 8080

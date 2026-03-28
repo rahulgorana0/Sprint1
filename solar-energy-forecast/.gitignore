@@ -1,0 +1,22 @@
+# Ignore the build directory
+/target/
+bin/
+
+# Ignore compiled classes
+*.class
+
+# Maven wrapper temp files
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE specific files
+.settings/
+.project
+.classpath
+.factorypath
+.idea/
+*.iml
+*.iws
+
+# OS specific files
+.DS_Store
+Thumbs.db

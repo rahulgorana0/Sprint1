@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- XML declaration parsing bounds -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"> <!-- Structural namespace mappings -->
+    <modelVersion>4.0.0</modelVersion> <!-- Core Maven Model target -->
+    
+    <!-- Designates the master Spring Boot parent controlling baseline version targets globally seamlessly -->
+    <parent>
+        <groupId>org.springframework.boot</groupId> <!-- Publisher target -->
+        <artifactId>spring-boot-starter-parent</artifactId> <!-- Parent framework payload -->
+        <version>4.0.3</version> <!-- Framework variant bounds -->
+        <relativePath/> <!-- Instructs to locate parent from internet Repo, not local disk -->
+    </parent>
+    
+    <!-- Application identifier maps -->
+    <groupId>com.energy</groupId> <!-- Namespace bounds -->
+    <artifactId>solar-energy-forecast</artifactId> <!-- Compiled Jar Output Name -->
+    <version>0.0.1-SNAPSHOT</version> <!-- Version definition marker -->
+    <name>solar-energy-forecast</name> <!-- Display tracker -->
+    <description>Solar Energy Forecast System using Weka ML</description> <!-- Technical Summary -->
+    
+    <!-- Compiler properties mapping cleanly completely -->
+    <properties>
+        <java.version>25</java.version> <!-- Hard constraints limiting compilation explicitly against JDK 25 mappings  -->
+    </properties>
+    
+    <!-- Explicit plugin and library dependency block mapping natively securely smoothly -->
+    <dependencies>
+        <!-- Integrates Spring Data JPA allowing object DB interactions easily efficiently cleanly -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <!-- Integrates server-side HTML rendering engine dynamically elegantly securely -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        
+        <!-- Boots native Tomcat webserver handling explicit REST HTTP targets dynamically smoothly cleanly -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Driver mappings securely establishing MySQL DB links actively natively flawlessly -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope> <!-- Prevents driver classes leaking explicitly into code compile bounds cleanly securely -->
+        </dependency>
+        
+        <!-- OpenCSV library managing complex dataset text scraping seamlessly effectively cleanly -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.9</version>
+        </dependency>
+
+        <!-- Spring testing modules enabling J-Unit testing boundaries securely exactly -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope> <!-- Excludes massive testing framework arrays natively from production JAR outputs -->
+        </dependency>
+        
+        <!-- Weka Machine Learning library delivering Linear Regression math models elegantly cleanly dynamically -->
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId> <!-- Publisher boundary -->
+            <artifactId>weka-stable</artifactId> <!-- Explicit stable variant -->
+            <version>3.8.6</version> <!-- Engine snapshot mapping bounds exactly -->
+        </dependency>
+    </dependencies>
+
+    <!-- Defines compilation and assembling tools intelligently properly gracefully -->
+    <build>
+        <plugins>
+            <!-- Invokes Spring's dedicated packager bundling Tomcat Server and all code into ONE executable JAR perfectly cleanly smoothly -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
