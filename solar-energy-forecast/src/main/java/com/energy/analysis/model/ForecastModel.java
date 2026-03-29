@@ -14,6 +14,7 @@ public class ForecastModel {
 
     @Id // Primary key modifier
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment behavior
+    @Column(name = "forecast_model_id")
     private Long id; // Unique model identifier
 
     @ManyToOne // Multiple models can be generated per solar plant

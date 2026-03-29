@@ -13,6 +13,7 @@ public class DailyMetrics {
 
     @Id // Surrogate primary identity
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Relies on database sequencing or auto-increment
+    @Column(name = "daily_metrics_id")
     private Long id; // Individual Metric row sequence
 
     @ManyToOne // One inverter produces multiple daily metrics naturally over time

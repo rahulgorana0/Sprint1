@@ -13,6 +13,7 @@ public class SolarPlant {
 
     @Id // Identifies sequence primary node row 
     @GeneratedValue(strategy = GenerationType.IDENTITY) // ID is auto-derived by MySQL index increments
+    @Column(name = "solar_plant_id")
     private Long id; // Surrogate root identifier
 
     @Column(name = "plant_id", nullable = false, unique = true) // Explicit plant identifier string often seen in CSV telemetry headers

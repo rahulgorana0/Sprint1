@@ -41,13 +41,13 @@ public interface TrainingFeatureRepository extends JpaRepository<TrainingFeature
     @Modifying // Specifies this interacts & mutates tables 
     @Transactional // Commits changes as a single transaction block 
     @Query(value = "INSERT INTO training_features (plant_id, date_time, irradiation_wm2, ambient_temp_c, sum_ac_power_kw) " +
-                   "SELECT p.id, g.date_time, w.irradiation_wm2, w.ambient_temp_c, SUM(g.ac_power_kw) " +
+                   "SELECT p.solar_plant_id, g.date_time, w.irradiation_wm2, w.ambient_temp_c, SUM(g.ac_power_kw) " +
                    "FROM solar_plant p " +
-                   "JOIN solar_inverter i ON p.id = i.plant_id " +
-                   "JOIN generation_data g ON i.id = g.inverter_id " +
-                   "JOIN weather_sensor s ON p.id = s.plant_id " +
-                   "JOIN weather_data w ON s.id = w.sensor_id AND g.date_time = w.date_time " +
-                   "GROUP BY p.id, g.date_time, w.irradiation_wm2, w.ambient_temp_c", 
+                   "JOIN solar_inverter i ON p.solar_plant_id = i.plant_id " +
+                   "JOIN generation_data g ON i.solar_inverter_id = g.inverter_id " +
+                   "JOIN weather_sensor s ON p.solar_plant_id = s.plant_id " +
+                   "JOIN weather_data w ON s.weather_sensor_id = w.sensor_id AND g.date_time = w.date_time " +
+                   "GROUP BY p.solar_plant_id, g.date_time, w.irradiation_wm2, w.ambient_temp_c", 
            nativeQuery = true) // Force JPA to ignore entity translation and feed specific native SQL 
     void populateFromJoins();
 }

@@ -13,6 +13,7 @@ public class GenerationData {
 
     @Id // Denotes the primary ID column
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates unique integer values
+    @Column(name = "generation_data_id")
     private Long id; // The surrogate integer key
 
     @ManyToOne // Multiple generation logs originate from a single hardware inverter

@@ -13,6 +13,7 @@ public class WeatherSensor {
 
     @Id // Flag for primary index constraint identity
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Ask the Database auto-increment to track creation 
+    @Column(name = "weather_sensor_id")
     private Long id; // Tracks primary sequential internal database index identifier
 
     @Column(name = "source_key", nullable = false, unique = true) // The hardware manufacturer's physical key/UUID marker 

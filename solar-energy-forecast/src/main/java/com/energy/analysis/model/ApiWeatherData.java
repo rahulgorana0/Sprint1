@@ -14,6 +14,7 @@ public class ApiWeatherData {
 
     @Id // Specifies the primary key of an entity
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Provides for the specification of generation strategies for the values of primary keys
+    @Column(name = "api_weather_data_id")
     private Long id; // Unique identifier for each API weather data record
 
     @ManyToOne // Defines a many-to-one relationship with SolarPlant; many weather data records can belong to one plant

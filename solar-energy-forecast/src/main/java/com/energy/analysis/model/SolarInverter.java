@@ -13,6 +13,7 @@ public class SolarInverter {
 
     @Id // Dictates DB primary 
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Delegate integer sequence to DB
+    @Column(name = "solar_inverter_id")
     private Long id; // Surrogate row key
 
     @Column(name = "source_key", nullable = false, unique = true) // Device UUID tracking (usually from telemetry equipment)

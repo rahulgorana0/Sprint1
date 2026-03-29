@@ -13,6 +13,7 @@ public class TrainingFeature {
 
     @Id // Auto-assigned identity column
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Strategy defaults to identity
+    @Column(name = "training_features_id")
     private Long id; // Data row surrogate key
 
     @ManyToOne // Can be multiple rows for a single plant

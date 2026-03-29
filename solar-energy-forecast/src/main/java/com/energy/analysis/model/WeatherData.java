@@ -13,6 +13,7 @@ public class WeatherData {
 
     @Id // Establish core identifier field flag
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Instruct standard increment layout
+    @Column(name = "weather_data_id")
     private Long id; // Unique data row numerical tracker
 
     @ManyToOne // Multiplexed records can exist for one single hardware sensor  
